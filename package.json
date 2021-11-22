@@ -1,0 +1,22 @@
+{
+  "name": "speack-english-backend",
+  "version": "1.0.0",
+  "description": "Voice calling app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "author": "abhi_codes",
+  "license": "ISC",
+  "dependencies": {
+    "agora-access-token": "^2.0.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.6",
+    "node": "^17.1.0",
+    "nodemon": "^2.0.15",
+    "validator": "^13.7.0"
+  }
+}
