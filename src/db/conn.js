@@ -6,7 +6,7 @@ mongoose.connect(
     mongoURI,
     {
         useNewUrlParser: true, 
-        useUnifiedTopology: true 
+        useUnifiedTopology: true,
  }).then(() => {
     console.log("Connection is successful...");
 }).catch((e) => {

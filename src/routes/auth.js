@@ -32,8 +32,10 @@ router.post("/auth/login", async(req,res) => {
                 password: newPass,
                 name: name,
                 avatar: avatar,
+                gmailUserId: gmailUserId,
+                online: true,
                 status: true,
-                refUser: ""
+                refUser: "",
             });
             const addUser = await user.save();
             return res.status(200).json({success: true, message: "User Registartion Successfully.", userData: addUser});

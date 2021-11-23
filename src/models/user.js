@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
     password : { type : String },
     name : { type : String },
     avatar : { type : String },
+    gmailUserId : { type : String },
+    online: { type: Boolean },
     status : { type : Boolean },
     refUser : { type : String },
 },{
