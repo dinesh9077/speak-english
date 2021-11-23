@@ -8,10 +8,45 @@ const Token = require("../models/token");
 const appID = "975826e708144327a987d81314927ce9";
 const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
 
+router.post("/joinCall", async(req,res) => {
+    try {
+        var username = req.body.username;
+        const userDetails = await User.findOne({username: username});
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "username not found..!"});
+        }
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+})
+
+//online - offline status
+router.post("/online", async(req,res) => {
+    try {
+        var username = req.body.username;
+        const userDetails = await User.findOne({username: username});
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "username not found..!"});
+        }
+
+        if (userDetails.online) {
+            const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: false}, {new:true});
+            return res.status(200).json({success: true, message: "Offline Successfully.", data: updateUser});
+        }
+
+        const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: true}, {new:true});
+        return res.status(200).json({success: true, message: "Online Successfully.", data: updateUser});
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
+
 //genrate token
 router.post("/callNow", async(req, res) => {
     try {
-
         var username = req.body.username;
         let uid = req.body.uid;
         let role = RtcRole.SUBSCRIBER;
@@ -67,8 +102,5 @@ router.post("/callNow", async(req, res) => {
         return res.status(400).json({success: false, message: error.message});
     }
 });
-
-//online - offline status
-
 
 module.exports = router;
