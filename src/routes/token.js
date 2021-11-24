@@ -4,7 +4,6 @@ const {RtcTokenBuilder, RtcRole} = require('agora-access-token');
 const User = require("../models/user");
 const Token = require("../models/token");
 
-
 const appID = "975826e708144327a987d81314927ce9";
 const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
 
@@ -15,6 +14,10 @@ router.post("/joinCall", async(req,res) => {
         if (!userDetails) {
             return res.status(400).json({success: false, message: "username not found..!"});
         }
+
+        const onlineUsers = await Token.find({available: true, isConnect: false});
+
+        return res.status(200).json({success: true, data: onlineUsers});
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
@@ -42,7 +45,6 @@ router.post("/online", async(req,res) => {
         return res.status(400).json({success: false, message: error.message});
     }
 });
-
 
 //genrate token
 router.post("/callNow", async(req, res) => {
