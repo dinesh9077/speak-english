@@ -10,6 +10,7 @@ const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
 router.post("/joinCall", async(req,res) => {
     try {
         var username = req.body.username;
+        var onlineUserList = [];
         const userDetails = await User.findOne({username: username});
         if (!userDetails) {
             return res.status(400).json({success: false, message: "username not found..!"});
@@ -17,7 +18,14 @@ router.post("/joinCall", async(req,res) => {
 
         const onlineUsers = await Token.find({available: true, isConnect: false});
 
-        return res.status(200).json({success: true, data: onlineUsers});
+        for (let i = 0; i < onlineUsers.length; i++) {
+            const newUsername = onlineUsers[i].username;
+            if (newUsername != username) {
+                onlineUserList.push(onlineUsers[i]);
+            }    
+        }
+        
+        return res.status(200).json({success: true, data: onlineUserList});
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
