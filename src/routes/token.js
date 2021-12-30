@@ -7,6 +7,33 @@ const Token = require("../models/token");
 const appID = "975826e708144327a987d81314927ce9";
 const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
 
+router.post("/connectCall", async(req,res) => {
+    try {
+        var username = req.body.username;
+        var connectUsername = req.body.connectUsername;
+
+        const userDetails = await User.findOne({username: username});
+        const connectUserDetails = await User.findOne({username: connectUsername});
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "Username not found..!"});
+        }
+        if (!connectUserDetails) {
+            return res.status(400).json({success: false, message: "Connect username not found..!"});
+        }
+
+        const onlineToken = await Token.findOne({username : connectUserDetails.username, available: true});
+        if (onlineToken) {
+            const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isConnect: true}, {new:true});
+            console.log(updateToken);
+        }
+        
+        return res.status(200).json({success: true, message: "Connect successfully."});
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
 router.post("/joinCall", async(req,res) => {
     try {
         var username = req.body.username;
@@ -30,7 +57,7 @@ router.post("/joinCall", async(req,res) => {
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
     }
-})
+});
 
 //online - offline status
 router.post("/online", async(req,res) => {
@@ -43,6 +70,12 @@ router.post("/online", async(req,res) => {
 
         if (userDetails.online) {
             const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: false}, {new:true});
+
+            const preTokenDetails = await Token.findOne({username: username, available: true});
+            if (preTokenDetails) {
+                await Token.findByIdAndUpdate(preTokenDetails._id, {available: false}, {new:true});
+            } 
+
             return res.status(200).json({success: true, message: "Offline Successfully.", data: updateUser});
         }
 
