@@ -24,10 +24,30 @@ router.post("/connectCall", async(req,res) => {
         const onlineToken = await Token.findOne({username : connectUserDetails.username, available: true});
         if (onlineToken) {
             const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isConnect: true}, {new:true});
-            console.log(updateToken);
         }
         
         return res.status(200).json({success: true, message: "Connect successfully."});
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
+router.post("/disconnectCall", async(req,res) => {
+    try {
+        var username = req.body.username;
+
+        const userDetails = await User.findOne({username: username});
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "Username not found..!"});
+        }
+
+        const onlineToken = await Token.findOne({username : userDetails.username, available: true});
+        if (onlineToken) {
+            const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isConnect: true}, {new:true});
+        }   
+        
+        return res.status(200).json({success: true, message: "Disconnect successfully."});
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
@@ -49,9 +69,8 @@ router.post("/joinCall", async(req,res) => {
             const newUsername = onlineUsers[i].username;
             if (newUsername != username) {
                 onlineUserList.push(onlineUsers[i]);
-            }    
+            }
         }
-        
         return res.status(200).json({success: true, data: onlineUserList});
         
     } catch (error) {
