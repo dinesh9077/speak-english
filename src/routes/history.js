@@ -14,7 +14,7 @@ router.post("/callHistory", async(req,res) => {
             return res.status(400).json({success: false, message: "Username not found..!"});
         }
 
-        const historyDetails = await History.find({username: username}).sort({$natural: - 1});
+        const historyDetails = await History.find({username: username}).sort({$natural: - 1}).limit(5);;
 
         return res.send({success: true, data: historyDetails});
         
