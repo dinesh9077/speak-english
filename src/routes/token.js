@@ -3,6 +3,7 @@ const router = new express.Router();
 const {RtcTokenBuilder, RtcRole} = require('agora-access-token');
 const User = require("../models/user");
 const Token = require("../models/token");
+const History = require("../models/history");
 
 const appID = "975826e708144327a987d81314927ce9";
 const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
@@ -26,6 +27,29 @@ router.post("/connectCall", async(req,res) => {
             const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isConnect: true}, {new:true});
         }
         
+        const incomingCall = new History({
+            userId: userDetails._id,
+            username: userDetails.username,
+            connectUserId: connectUserDetails._id,
+            connectUsername: connectUserDetails.username,
+            connectName: connectUserDetails.name,
+            connectAvatar: connectUserDetails.avatar,
+            type: "Incoming",
+        });
+        await incomingCall.save();
+
+        const outgoingCall = new History({
+            userId: connectUserDetails._id,
+            username: connectUserDetails.username,
+            connectUserId: userDetails._id,
+            connectUsername: userDetails.username,
+            connectName: userDetails.name,
+            connectAvatar: userDetails.avatar,
+            type: "Outgoing",
+        });
+        await outgoingCall.save();
+        
+
         return res.status(200).json({success: true, message: "Connect successfully."});
         
     } catch (error) {
