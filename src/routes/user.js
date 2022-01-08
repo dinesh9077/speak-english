@@ -49,4 +49,24 @@ router.delete("/user/:id", async(req,res) => {
     }
 });
 
+router.post("/user/updateStatus", async(req,res) => {
+    try {
+        
+        var userId = req.body.userId;
+        var status = req.body.status;
+        const userDetails = await User.findById(userId);
+
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "User doesn't exists..!"});
+        }
+
+        const updateUser = await User.findByIdAndUpdate(userId, {status: status}, {new:true});
+
+        return res.status(200).json({success: true, message: "User status update successfully.", data: updateUser})
+
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
 module.exports = router;

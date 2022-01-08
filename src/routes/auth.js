@@ -12,7 +12,7 @@ router.post("/auth/login", async(req,res) => {
         const userDetails = await User.findOne({email: email});
 
         if (!gmailUserId) {
-            return res.status(400).json({success: false, message: "Please send gmail user id..!"});
+            
         }
 
         //set login
