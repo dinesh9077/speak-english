@@ -4,9 +4,10 @@ const {RtcTokenBuilder, RtcRole} = require('agora-access-token');
 const User = require("../models/user");
 const Token = require("../models/token");
 const History = require("../models/history");
+const Agora = require("../models/agora");
 
-const appID = "975826e708144327a987d81314927ce9";
-const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
+// const appID = "975826e708144327a987d81314927ce9";
+// const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
 
 router.post("/connectCall", async(req,res) => {
     try {
@@ -165,9 +166,15 @@ router.post("/callNow", async(req, res) => {
 
         if (preTokenDetails) {
             await Token.findByIdAndUpdate(preTokenDetails._id, {available: false}, {new:true});
-        } 
+        }
 
-        const genratedToken = RtcTokenBuilder.buildTokenWithUid(appID, appCertificate, channel, uid, role, privilegeExpireTime);
+        const agoraData = await Agora.findOne();
+
+        if (!agoraData) {
+            return res.status(400).json({success: false, message: "Please Add Agora Service from Admin"});
+        }
+
+        const genratedToken = RtcTokenBuilder.buildTokenWithUid(agoraData.appId, agoraData.appCertificate, channel, uid, role, privilegeExpireTime);
 
         const token = new Token({
             userId: userDetails._id,
