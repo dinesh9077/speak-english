@@ -23,4 +23,16 @@ router.post("/callHistory", async(req,res) => {
     }
 });
 
+
+router.post("/admin/allUserCallHistory", async(req,res) => {
+    try {
+        const historyDetails = await History.find();
+    
+        return res.send(historyDetails);
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
 module.exports = router;
