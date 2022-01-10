@@ -6,6 +6,7 @@ const tokenRouter = require("./routes/token");
 const authRouter = require("./routes/auth");
 const historyRouter = require("./routes/history");
 const agoraRouter = require("./routes/agora");
+const adminRouter = require("./routes/admin");
 
 const app = express();
 var serverPort = 6000;
@@ -20,6 +21,7 @@ app.use(tokenRouter);
 app.use(authRouter);
 app.use(historyRouter);
 app.use(agoraRouter);
+app.use(adminRouter);
 
 //connection
 app.listen(port, () => console.log(`Magic Happen on :) ${port}`));
