@@ -25,6 +25,9 @@ router.post("/connectCall", async(req,res) => {
 
         const onlineToken = await Token.findOne({username : connectUserDetails.username, available: true});
         if (onlineToken) {
+            if (onlineToken.isConnect) {
+                return res.status(400).json({success: false, message: "User Already Connected..!"});
+            }
             const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isConnect: true}, {new:true});
         }
         
