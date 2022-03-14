@@ -9,6 +9,17 @@ const Agora = require("../models/agora");
 // const appID = "975826e708144327a987d81314927ce9";
 // const appCertificate = "b4d04ddfd42c44e084a3cb46893fcc1d";
 
+router.post("/availableOnblineUsers", async(req,res) => {
+    try {
+        
+        const findOnlineUsers = await User.find({online: true});
+        return res.status(200).json({success: true, data: findOnlineUsers})
+
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+})
+
 router.post("/connectCall", async(req,res) => {
     try {
         var username = req.body.username;
@@ -86,20 +97,35 @@ router.post("/joinCall", async(req,res) => {
     try {
         var username = req.body.username;
         var onlineUserList = [];
+        var callNowUserList = [];
         const userDetails = await User.findOne({username: username});
         if (!userDetails) {
             return res.status(400).json({success: false, message: "username not found..!"});
         }
 
-        const onlineUsers = await Token.find({available: true, isConnect: false});
+        // const onlineUsers = await Token.find({available: true, isConnect: false});
 
-        for (let i = 0; i < onlineUsers.length; i++) {
-            const newUsername = onlineUsers[i].username;
+        // for (let i = 0; i < onlineUsers.length; i++) {
+        //     const newUsername = onlineUsers[i].username;
+        //     if (newUsername != username) {
+        //         onlineUserList.push(onlineUsers[i]);
+        //     }
+        // }
+
+        const callNowUsers = await Token.find({available: true, isConnect: false, connectUsername: username});
+
+        if (callNowUsers.length == 0) {
+            return res.status(400).json({success: false, message: "No users are available..!"});
+        }
+
+         for (let i = 0; i < callNowUsers.length; i++) {
+            const newUsername = callNowUsers[i].username;
             if (newUsername != username) {
-                onlineUserList.push(onlineUsers[i]);
+                callNowUserList.push(callNowUsers[i]);
             }
         }
-        return res.status(200).json({success: true, data: onlineUserList});
+
+        return res.status(200).json({success: true, data: callNowUserList});
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
@@ -116,17 +142,17 @@ router.post("/online", async(req,res) => {
         }
 
         if (userDetails.online) {
-            const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: false}, {new:true});
+            const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: false}, {new: true});
 
             const preTokenDetails = await Token.findOne({username: username, available: true});
             if (preTokenDetails) {
-                await Token.findByIdAndUpdate(preTokenDetails._id, {available: false}, {new:true});
+                await Token.findByIdAndUpdate(preTokenDetails._id, {available: false}, {new: true});
             } 
 
             return res.status(200).json({success: true, message: "Offline Successfully.", data: updateUser});
         }
 
-        const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: true}, {new:true});
+        const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: true}, {new: true});
         return res.status(200).json({success: true, message: "Online Successfully.", data: updateUser});
         
     } catch (error) {
@@ -141,6 +167,8 @@ router.post("/callNow", async(req, res) => {
         let uid = req.body.uid;
         let role = RtcRole.SUBSCRIBER;
         let expireTime = req.body.expireTime;
+
+        var onlineUserData;
 
         const userDetails = await User.findOne({username: username});
         if (!userDetails) {
@@ -177,6 +205,19 @@ router.post("/callNow", async(req, res) => {
             return res.status(400).json({success: false, message: "Please Add Agora Service from Admin"});
         }
 
+        const onlineUsers = await User.find({online: true});
+
+        if (onlineUsers.length == 0) {
+            return res.status(400).json({success: false, message: "No users are online..!"});
+        }
+
+        for (let i = 0; i < onlineUsers.length; i++) {
+            const newUsername = onlineUsers[i].username;
+            if (newUsername != username) {
+                onlineUserData = onlineUsers[0];
+            }
+        }
+
         const genratedToken = RtcTokenBuilder.buildTokenWithUid(agoraData.appId, agoraData.appCertificate, channel, uid, role, privilegeExpireTime);
 
         const token = new Token({
@@ -187,12 +228,14 @@ router.post("/callNow", async(req, res) => {
             token: genratedToken,
             available: true,
             isConnect: false,
+            connectUsername: onlineUserData.username,
         });
 
         const addToken = await token.save();
 
-        return res.status(200).json({success: true, data: addToken});
+        const updateUser = await User.findByIdAndUpdate(onlineUserData._id, {online: false}, {new:true});
 
+        return res.status(200).json({success: true, data: addToken});
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});

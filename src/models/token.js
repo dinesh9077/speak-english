@@ -9,6 +9,7 @@ const tokenSchema = new mongoose.Schema({
     token : { type : String },
     available: { type: Boolean },
     isConnect: { type: Boolean },
+    connectUsername: { type: String },
 },{
     timestamps: true
 });
