@@ -205,7 +205,7 @@ router.post("/callNow", async(req, res) => {
             return res.status(400).json({success: false, message: "Please Add Agora Service from Admin"});
         }
 
-        const onlineUsers = await User.find({online: true});
+        var onlineUsers = await User.find({online: true});
 
         if (onlineUsers.length == 0) {
             return res.status(400).json({success: false, message: "No users are online..!"});
@@ -213,9 +213,12 @@ router.post("/callNow", async(req, res) => {
 
         for (let i = 0; i < onlineUsers.length; i++) {
             const newUsername = onlineUsers[i].username;
-            if (newUsername != username) {
-                onlineUserData = onlineUsers[0];
+
+            if (newUsername == username) {
+                onlineUsers.splice(i, 1)
             }
+
+            onlineUserData = onlineUsers[Math.floor(Math.random()*onlineUsers.length)];
         }
 
         const genratedToken = RtcTokenBuilder.buildTokenWithUid(agoraData.appId, agoraData.appCertificate, channel, uid, role, privilegeExpireTime);
@@ -241,5 +244,6 @@ router.post("/callNow", async(req, res) => {
         return res.status(400).json({success: false, message: error.message});
     }
 });
+
 
 module.exports = router;
