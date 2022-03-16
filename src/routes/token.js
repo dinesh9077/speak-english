@@ -214,11 +214,15 @@ router.post("/callNow", async(req, res) => {
         for (let i = 0; i < onlineUsers.length; i++) {
             const newUsername = onlineUsers[i].username;
 
-            if (newUsername == username) {
+            if (username == newUsername) {
                 onlineUsers.splice(i, 1)
             }
 
             onlineUserData = onlineUsers[Math.floor(Math.random()*onlineUsers.length)];
+        }
+
+        if (!onlineUserData) {
+            return res.status(400).json({success: false, message: "No users are online..!"});
         }
 
         const genratedToken = RtcTokenBuilder.buildTokenWithUid(agoraData.appId, agoraData.appCertificate, channel, uid, role, privilegeExpireTime);
