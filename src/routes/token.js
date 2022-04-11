@@ -35,6 +35,7 @@ router.post("/connectCall", async(req,res) => {
         }
 
         const onlineToken = await Token.findOne({username : connectUserDetails.username, available: true});
+        
         if (onlineToken) {
             if (onlineToken.isConnect) {
                 return res.status(400).json({success: false, message: "User Already Connected..!"});
@@ -51,6 +52,7 @@ router.post("/connectCall", async(req,res) => {
             connectAvatar: connectUserDetails.avatar,
             type: "Incoming",
         });
+
         await incomingCall.save();
 
         const outgoingCall = new History({

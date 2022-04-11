@@ -11,7 +11,7 @@ const profileRouter = require("./routes/profile");
 const zegoTokenRouter = require("./routes/zegoToken");
 
 const app = express();
-var serverPort = 6000;
+var serverPort = 5000;
 const port = process.env.PORT || serverPort
 
 app.use(express.json());
