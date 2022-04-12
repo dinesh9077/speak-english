@@ -56,6 +56,7 @@ router.post("/onlineZego", async(req,res) => {
         }
 
         const channel = username;
+        console.log(`Online user Room : ${channel}`);
 
         const newPayloadObject = {
             room_id: channel,
@@ -65,9 +66,9 @@ router.post("/onlineZego", async(req,res) => {
             },
             stream_id_list: null
         }; // 
-        const payload = JSON.stringify(newPayloadObject);
+        const newPayload = JSON.stringify(newPayloadObject);
 
-        const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, payload);;
+        const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, newPayload);;
 
 
         const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: true}, {new: true});
@@ -96,9 +97,8 @@ router.post("/callNowZego", async(req, res) => {
 
         const userDetails = await User.findOne({username: username});
         if (!userDetails) {
-            return res.status(400).json({success: false, message: "username not found..!"});
+            return res.status(400).json({success: false, message: "Username not found..!"});
         }
-        
 
         if(!uid || uid == '') {
             uid = 0;
@@ -156,9 +156,9 @@ router.post("/callNowZego", async(req, res) => {
             },
             stream_id_list: null
         }; // 
-        const payload = JSON.stringify(newPayloadObject);
+        const newPayload = JSON.stringify(newPayloadObject);
 
-        const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, payload);;
+        const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, newPayload);;
 
         const token = new Token({
             userId: userDetails._id,
