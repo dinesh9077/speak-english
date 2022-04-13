@@ -72,10 +72,11 @@ router.post("/onlineZego", async(req,res) => {
 
 
         const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: true}, {new: true});
+        
         return res.status(200).json({
             success: true, 
             message: "Online Successfully.", 
-            data: updateUser, 
+            data: updateUser,   
             token: genratedToken,
             roomId: channel,
         });
@@ -176,6 +177,28 @@ router.post("/callNowZego", async(req, res) => {
         const updateUser = await User.findByIdAndUpdate(onlineUserData._id, {online: false}, {new:true});
 
         return res.status(200).json({success: true, data: addToken});
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
+
+router.post("/checkTokenDisconnected", async(req,res) => {
+    try {
+        var username = req.body.username;
+
+        const userDetails = await User.findOne({username: username});
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "Username not found..!"});
+        }
+
+        const onlineToken = await Token.findOne({username : userDetails.username, available: true});
+        if (onlineToken) {
+            return res.status(200).json({success: true, connected: true});
+        }
+
+        return res.status(200).json({success: true, connected: false});
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
