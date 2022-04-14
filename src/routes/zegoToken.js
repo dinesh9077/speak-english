@@ -169,6 +169,7 @@ router.post("/callNowZego", async(req, res) => {
             token: genratedToken,
             available: true,
             isConnect: false,
+            isDisconnect: false,
             connectUsername: onlineUserData.username,
         });
 
@@ -193,7 +194,7 @@ router.post("/checkTokenDisconnected", async(req,res) => {
             return res.status(400).json({success: false, message: "Username not found..!"});
         }
 
-        const onlineToken = await Token.findOne({username : userDetails.username, available: true});
+        const onlineToken = await Token.findOne({username : userDetails.username, available: true, isDisconnect: false});
         if (onlineToken) {
             return res.status(200).json({success: true, connected: true});
         }

@@ -85,7 +85,7 @@ router.post("/disconnectCall", async(req,res) => {
 
         const onlineToken = await Token.findOne({username : userDetails.username, available: true});
         if (onlineToken) {
-            const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isConnect: true}, {new:true});
+            const updateToken = await Token.findByIdAndUpdate(onlineToken._id, {isDisconnect: true}, {new:true});
         }   
         
         return res.status(200).json({success: true, message: "Disconnect successfully."});
