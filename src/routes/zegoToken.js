@@ -55,20 +55,20 @@ router.post("/onlineZego", async(req,res) => {
             return res.status(200).json({success: true, message: "Offline Successfully.", data: updateUser});
         }
 
-        const channel = username;
-        console.log(`Online user Room : ${channel}`);
+        // const channel = username;
+        // console.log(`Online user Room : ${channel}`);
 
-        const newPayloadObject = {
-            room_id: channel,
-            privilege: {
-                1: 1,   // loginRoom: 1 pass , 0 not pass
-                2: 0   // publishStream: 1 pass , 0 not pass
-            },
-            stream_id_list: null
-        }; // 
-        const newPayload = JSON.stringify(newPayloadObject);
+        // const newPayloadObject = {
+        //     room_id: channel,
+        //     privilege: {
+        //         1: 1,   // loginRoom: 1 pass , 0 not pass
+        //         2: 0   // publishStream: 1 pass , 0 not pass
+        //     },
+        //     stream_id_list: null
+        // }; // 
+        // const newPayload = JSON.stringify(newPayloadObject);
 
-        const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, newPayload);;
+        // const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, newPayload);
 
 
         const updateUser = await User.findByIdAndUpdate(userDetails._id, {online: true}, {new: true});
@@ -77,8 +77,8 @@ router.post("/onlineZego", async(req,res) => {
             success: true, 
             message: "Online Successfully.", 
             data: updateUser,   
-            token: genratedToken,
-            roomId: channel,
+            //token: genratedToken,
+            //roomId: channel,
         });
         
     } catch (error) {
@@ -105,7 +105,8 @@ router.post("/callNowZego", async(req, res) => {
             uid = 0;
         }
 
-        if (!expireTime || expireTime == '') {
+        if (!expireTime || expireTime == '') 
+        {
             expireTime = 3600;
         } else {
             expireTime = parseInt(expireTime, 10);
@@ -200,6 +201,57 @@ router.post("/checkTokenDisconnected", async(req,res) => {
         }
 
         return res.status(200).json({success: true, connected: false});
+        
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message});
+    }
+});
+
+
+router.post("/zegoJoinCall", async(req,res) => {
+    try {
+        var username = req.body.username;
+        var onlineUserList = [];
+        var callNowUserList = [];
+        const userDetails = await User.findOne({username: username});
+        if (!userDetails) {
+            return res.status(400).json({success: false, message: "username not found..!"});
+        }
+
+        const callNowUsers = await Token.find({available: true, isConnect: false, connectUsername: username});
+
+        if (callNowUsers.length == 0) {
+            return res.status(400).json({success: false, message: "No users are available..!"});
+        }
+
+         for (let i = 0; i < callNowUsers.length; i++) {
+            const newUsername = callNowUsers[i].username;
+            if (newUsername != username) {
+                callNowUserList.push(callNowUsers[i]);
+            }
+        }
+
+        const channel = username;
+        console.log(`Online user Room : ${channel}`);
+
+        const newPayloadObject = {
+            room_id: channel,
+            privilege: {
+                1: 1,   // loginRoom: 1 pass , 0 not pass
+                2: 0   // publishStream: 1 pass , 0 not pass
+            },
+            stream_id_list: null
+        }; // 
+        const newPayload = JSON.stringify(newPayloadObject);
+
+        const genratedToken = generateToken04(appID, username, secret, effectiveTimeInSeconds, newPayload);
+
+        return res.status(200).json({
+            success: true, 
+            data: callNowUserList,
+            token: genratedToken,
+            roomId: channel,
+        });
         
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
