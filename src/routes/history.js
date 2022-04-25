@@ -35,4 +35,16 @@ router.post("/admin/allUserCallHistory", async(req,res) => {
     }
 });
 
+
+// router.post("/delete/allHistory", async(req,res) => {
+//     try {
+//         const historyDetails = await History.deleteMany({});
+//         const historyCount = await History.count();
+//         return res.send({success: true, msg: "Data deleted successfully", data: historyCount});
+
+//     } catch (error) {
+//         return res.status(400).json({success: false, message: error.message});
+//     }
+// });
+
 module.exports = router;

@@ -18,7 +18,7 @@ router.post("/availableOnblineUsers", async(req,res) => {
     } catch (error) {
         return res.status(400).json({success: false, message: error.message});
     }
-})
+});
 
 router.post("/connectCall", async(req,res) => {
     try {
@@ -55,7 +55,7 @@ router.post("/connectCall", async(req,res) => {
 
         await incomingCall.save();
 
-        const outgoingCall = new History({
+        const outgoingCall = new History({  
             userId: connectUserDetails._id,
             username: connectUserDetails.username,
             connectUserId: userDetails._id,
@@ -250,6 +250,17 @@ router.post("/callNow", async(req, res) => {
         return res.status(400).json({success: false, message: error.message});
     }
 });
+
+
+// router.post("/delete/allTokens", async(req,res) => {
+//     try {
+//         const tokenDetails = await Token.deleteMany({});
+//         return res.send({success: true, msg: "Data deleted successfully", data: tokenDetails});
+
+//     } catch (error) {
+//         return res.status(400).json({success: false, message: error.message});
+//     }
+// })
 
 
 module.exports = router;

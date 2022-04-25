@@ -11,6 +11,9 @@ const userSchema = new mongoose.Schema({
     online: { type: Boolean },
     status : { type : Boolean },
     refUser : { type : String },
+    connected : { type : Boolean },
+    zegoToken : { type : String },
+    roomId : { type : String },
 },{
     timestamps: true
 });

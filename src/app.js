@@ -9,6 +9,7 @@ const agoraRouter = require("./routes/agora");
 const adminRouter = require("./routes/admin");
 const profileRouter = require("./routes/profile");
 const zegoTokenRouter = require("./routes/zegoToken");
+const newCallNowRouter = require("./routes/new_call_now");
 
 const app = express();
 var serverPort = 5000;
@@ -26,6 +27,7 @@ app.use(agoraRouter);
 app.use(adminRouter);
 app.use(profileRouter);
 app.use(zegoTokenRouter);
+app.use(newCallNowRouter);
 
 //connection
 app.listen(port, () => console.log(`Magic Happen on :) ${port}`));
