@@ -69,7 +69,6 @@ router.post("/newCallNowZego", async(req,res) => {
                 isConnect: false,
             });
             await addRoom.save();
-            
 
             return res.status(200).json({
                 success: true, 
