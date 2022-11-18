@@ -12,7 +12,7 @@ const zegoTokenRouter = require("./routes/zegoToken");
 const newCallNowRouter = require("./routes/new_call_now");
 
 const app = express();
-var serverPort = 6000;
+var serverPort = 4000;
 const port = process.env.PORT || serverPort
 
 app.use(express.json());
