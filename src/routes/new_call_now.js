@@ -3,6 +3,7 @@ const router = new express.Router();
 const { generateToken04 } = require('../zegoServer/zegoServerAssistant');
 const User = require("../models/user");
 const Room = require("../models/room");
+const { Console } = require("console");
 
 
 
@@ -24,14 +25,14 @@ router.post("/newCallNowZego", async(req,res) => {
         }
 
         const onlineAvailableUser = await User.find({online: true, connected: false});
-
+        
         for (let i = 0; i < onlineAvailableUser.length; i++) {
             const element = onlineAvailableUser[i];
             if (element['username'] != username) {
                 availableUserList.push(element);
             }
         }
-
+        console.warn(availableUserList);
         //no user are available
         if (availableUserList.length == 0) {
 
